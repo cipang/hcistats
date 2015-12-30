@@ -1,3 +1,5 @@
+require(coin)
+
 factor.freq <- function(input) {
   t <- table(input)
   p <- prop.table(t)
@@ -20,7 +22,6 @@ basic.desc <- function(input) {
   return(result)
 }
 
-library(coin)
 wtest <- function(a, b) {
   t <- wilcoxsign_test(b ~ a, distribution="exact")
   z <- statistic(t)
@@ -118,7 +119,7 @@ report <- function(d) {
 
 # Load data into a variable.
 #setwd("~/Downloads")
-#d = read.csv(file="24.csv")
+#d = read.csv(file="input.csv")
 
 # Run report function.
 #sink("study_result_output.txt")     # Output to a file if you wish.
