@@ -39,11 +39,11 @@ xcopy <- function(table) {
   close(clip)
 }
 
+print.table <- function(obj) {
+  write.table(obj, sep="\t", quote=F, col.names=NA)
+}
+
 report <- function(d) {
-  print.table <- function(obj) {
-    write.table(obj, sep="\t", quote=F, col.names=NA)
-  }
-  
   cat(sprintf("N = %d\n", length(d[[1]])))
   cat("\nGender\n")
   print.table(factor.freq(d$Gender))
@@ -114,6 +114,60 @@ report <- function(d) {
   colnames(m) <- c("AB_Z", "AB_p", "AB_ES",
                    "CD_Z", "CD_p", "CD_ES")
   cat("\nWilcoxon Test Results\n")
+  print.table(m)
+}
+
+bhx.report <- function(d) {
+  # Descriptive stats.
+  q <- c("RealPage", "RealLink", "TimeinSec", "QuerySlider", "RecomClick", "Filter",
+         "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10",
+         "Q11", "Q12", "Q13", "Q14", "Q15")
+  g <- c("B", "D")
+  m <- matrix(NA, nrow=length(q), ncol=length(g) * 3)
+  x <- 1
+  y <- 1
+  for (i in 1:length(q)) {
+    for (j in 1:length(g)) {
+      vec <- d[[paste0(q[i], "_", g[j])]]
+      m[x, y] <- mean(vec)
+      m[x, y+1] <- sd(vec)
+      m[x, y+2] <- median(vec)
+      y <- y + 3
+    }
+    x <- x + 1
+    y <- 1
+  }
+  rownames(m) <- q
+  colnames(m) <- c("B_M", "B_SD", "B_Med",
+                   "D_M", "D_SD", "D_Med")
+  cat("\nDescriptive Statistics\n")
+  print.table(m)
+  
+  # W-Test.
+  q <- c("RealPage", "RealLink", "TimeinSec", "QuerySlider", "RecomClick", "Filter",
+         "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10",
+         "Q11", "Q12", "Q13", "Q14", "Q15")
+  g <- c("B", "D")
+  m <- matrix(NA, nrow=length(q), ncol=3)
+  x <- 1
+  y <- 1
+  test_func <- wtest
+  for (i in 1:length(q)) {
+    n1 <- paste0(q[i], "_", g[1])
+    n2 <- paste0(q[i], "_", g[2])
+    v1 <- d[[n1]]
+    v2 <- d[[n2]]
+    r = test_func(v1, v2)
+    m[x, y] <- r[1]  # statistic
+    m[x, y+1] <- r[2]   # p-value
+    m[x, y+2] <- r[3]   # effect size
+
+    x <- x + 1
+    y <- 1
+  }
+  rownames(m) <- q
+  colnames(m) <- c("BD_Z", "BD_p", "BD_ES")
+  cat("\nWilcoxon Test Results (Task B and D - BHX Only)\n")
   print.table(m)
 }
 
