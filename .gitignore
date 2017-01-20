@@ -74,6 +74,7 @@ target/
 *.sublime-workspace
 *.sublime-project
 .idea/
+.ipynb_checkpoints/
 
 # My own data files.
 *.csv
